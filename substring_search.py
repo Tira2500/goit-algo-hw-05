@@ -68,9 +68,43 @@ def boyer_moore_search(text, pattern):
     return -1
 
 
+# ============================================================
+# 3. Алгоритм Рабіна-Карпа (Rabin-Karp)
+# ============================================================
+
+def rabin_karp_search(text, pattern):
+    """Пошук підрядка алгоритмом Рабіна-Карпа."""
+    n, m = len(text), len(pattern)
+    if m == 0:
+        return 0
+    base = 256
+    mod = 101
+    pattern_hash = 0
+    text_hash = 0
+    h = 1
+
+    for _ in range(m - 1):
+        h = (h * base) % mod
+
+    for i in range(m):
+        pattern_hash = (base * pattern_hash + ord(pattern[i])) % mod
+        text_hash = (base * text_hash + ord(text[i])) % mod
+
+    for i in range(n - m + 1):
+        if pattern_hash == text_hash:
+            if text[i:i + m] == pattern:
+                return i
+        if i < n - m:
+            text_hash = (base * (text_hash - ord(text[i]) * h) + ord(text[i + m])) % mod
+            if text_hash < 0:
+                text_hash += mod
+    return -1
+
+
 if __name__ == "__main__":
     text = "Алгоритми пошуку використовуються в програмуванні"
     pattern = "пошуку"
 
-    print(f"KMP      : позиція {kmp_search(text, pattern)}")
-    print(f"Боєр-Мур : позиція {boyer_moore_search(text, pattern)}")
+    print(f"KMP        : позиція {kmp_search(text, pattern)}")
+    print(f"Боєр-Мур   : позиція {boyer_moore_search(text, pattern)}")
+    print(f"Рабін-Карп : позиція {rabin_karp_search(text, pattern)}")
