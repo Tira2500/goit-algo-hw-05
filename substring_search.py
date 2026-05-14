@@ -36,7 +36,41 @@ def kmp_search(text, pattern):
     return -1
 
 
+# ============================================================
+# 2. Алгоритм Боєра-Мура (Boyer-Moore)
+# ============================================================
+
+def build_shift_table(pattern):
+    """Будує таблицю зсувів для алгоритму Боєра-Мура."""
+    table = {}
+    m = len(pattern)
+    for i, char in enumerate(pattern[:-1]):
+        table[char] = m - i - 1
+    return table
+
+
+def boyer_moore_search(text, pattern):
+    """Пошук підрядка алгоритмом Боєра-Мура."""
+    n, m = len(text), len(pattern)
+    if m == 0:
+        return 0
+    shift_table = build_shift_table(pattern)
+    i = m - 1
+    while i < n:
+        j = m - 1
+        k = i
+        while j >= 0 and text[k] == pattern[j]:
+            j -= 1
+            k -= 1
+        if j == -1:
+            return k + 1
+        i += shift_table.get(text[i], m)
+    return -1
+
+
 if __name__ == "__main__":
     text = "Алгоритми пошуку використовуються в програмуванні"
     pattern = "пошуку"
-    print(f"KMP: позиція {kmp_search(text, pattern)}")
+
+    print(f"KMP      : позиція {kmp_search(text, pattern)}")
+    print(f"Боєр-Мур : позиція {boyer_moore_search(text, pattern)}")
